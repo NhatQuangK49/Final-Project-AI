@@ -1,0 +1,42 @@
+{
+  "muffin": {
+    "vietnamese_name": "Muffin Việt Quất",
+    "price": 25000
+  },
+  "banh_chuoi_nuong": {
+    "vietnamese_name": "Bánh Chuối Nướng",
+    "price": 19000
+  },
+  "croissant": {
+    "vietnamese_name": "Croissant",
+    "price": 30000
+  },
+  "banh_mi_bo_(cua_lon)": {
+    "vietnamese_name": "Bánh mì bơ (Cua lớn)",
+    "price": 18000
+  },
+  "tart_trung": {
+    "vietnamese_name": "Egg Tart",
+    "price": 21000
+  },
+  "cookies_dua": {
+    "vietnamese_name": "Bánh Cookies dừa",
+    "price": 23000
+  },
+  "cha_bong_cay": {
+    "vietnamese_name": "Chà bông cây",
+    "price": 27000
+  },
+  "patechaud": {
+    "vietnamese_name": "Bánh Patechaud",
+    "price": 30000
+  },
+  "banh_mi_dua_luoi": {
+    "vietnamese_name": "Bánh mì dừa lưới",
+    "price": 15000
+  },
+  "banh_da_lon": {
+    "vietnamese_name": "Bánh da lợn",
+    "price": 23000
+  }
+}
