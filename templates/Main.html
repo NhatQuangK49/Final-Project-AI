@@ -3,66 +3,90 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ABC Bakery - Nhận diện bánh theo khay</title>
+    <title>ABC Bakery - AI Recognition</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+    
     <link rel="stylesheet" href="{{ url_for('static', filename='bareky.css') }}">
-    <link rel="icon" href="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRz-43s-8JWl-19a6w-ET93-Al2H-Gg3u-exw&s" type="image/x-icon">
+    <link rel="icon" href="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRz-43s-8JWl-19a6w-ET93-Al2H-Gg3u-exw&s" type="image-x-icon">
 </head>
 <body>
+    <!-- TIÊU ĐỀ THƯƠNG HIỆU (KHÔNG THAY ĐỔI) -->
+    <header class="main-header">
+        <img src="{{ url_for('static', filename='logo.png') }}" alt="ABC Bakery Logo" class="bakery-logo">
+    </header>
 
-    <div class="container">
-        <header>
-            <h1>Hệ thống nhận diện bánh theo khay</h1>
-        </header>
+    <!-- === BỌC NỘI DUNG CHÍNH VÀO WRAPPER MỚI === -->
+    <div class="main-content-wrapper">
 
-        <main>
-            <!-- Khu vực tải ảnh lên -->
-            <div class="upload-section">
-                <input type="file" id="image-upload-input" accept="image/*" style="display: none;">
-                <button onclick="document.getElementById('image-upload-input').click()" class="btn-upload">
-                    Chọn ảnh khay bánh
-                </button>
-                <!-- Canvas để vẽ và hiển thị ảnh -->
-                <canvas id="image-canvas" class="hidden"></canvas>
-            </div>
-            
-            <div class="controls">
-                <button id="predict-tray-button" class="btn-predict" disabled>Nhận diện khay bánh</button>
-                <button id="reset-button" class="btn-secondary" disabled>Làm lại</button>
-            </div>
+        <!-- CỘT BÊN TRÁI: TƯƠNG TÁC -->
+        <div class="interaction-panel">
+            <div class="container">
+                <h2>Chọn chế độ nhận diện</h2>
+                
+                <div class="mode-selection">
+                    <input type="radio" name="mode" id="mode-fixed-tray" value="fixed_tray" checked>
+                    <label for="mode-fixed-tray">Khay cố định (5 bánh)</label>
 
-            <div id="loader" class="loader hidden"></div>
+                    <input type="radio" name="mode" id="mode-single-cake" value="single_cake">
+                    <label for="mode-single-cake">Một loại bánh</label>
+                </div>
 
-            <!-- Khu vực hiển thị kết quả -->
-            <div id="result-section" class="result-section hidden">
-                <h2>Kết quả nhận diện</h2>
-                <table id="result-table">
-                    <thead>
-                        <tr>
-                            <th>STT</th>
-                            <th>Tên bánh</th>
-                            <th>Độ chính xác</th>
-                            <th>Giá tiền</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <!-- Dữ liệu sẽ được chèn vào đây bởi JavaScript -->
-                    </tbody>
-                </table>
-                <div class="total-price">
-                    <strong>Tổng cộng:</strong>
-                    <span id="total-price-value"></span>
+                <div class="upload-section">
+                    <input type="file" id="image-upload-input" accept="image/*" style="display: none;">
+                    <button onclick="document.getElementById('image-upload-input').click()" class="btn-upload">
+                        Chọn ảnh khay bánh
+                    </button>
+                    <canvas id="image-canvas" class="hidden"></canvas>
+                </div>
+                <div class="controls">
+                    <button id="predict-tray-button" class="btn-predict" disabled>Nhận diện</button>
+                    <button id="reset-button" class="btn-secondary" disabled>Làm lại</button>
                 </div>
             </div>
+        </div>
 
-            <!-- Khu vực hiển thị mã QR -->
-            <div id="qr-section" class="qr-section hidden">
-                <h2>Quét mã để thanh toán</h2>
-                <img id="qr-code-image" src="" alt="Mã QR thanh toán">
-                <p id="qr-info" class="qr-info"></p>
+        <!-- CỘT BÊN PHẢI: KẾT QUẢ -->
+        <div class="results-panel">
+            <div class="container">
+                <div id="results-placeholder" class="results-placeholder">
+                    <h2>Chờ kết quả</h2>
+                    <p>Kết quả nhận diện và mã thanh toán sẽ xuất hiện ở đây.</p>
+                </div>
+
+                <div id="loader" class="loader hidden"></div>
+
+                <div id="result-section" class="result-section hidden">
+                    <h2>Vui lòng xác nhận các món bánh</h2>
+                    <table id="result-table">
+                        <thead>
+                            <tr>
+                                <th>STT</th>
+                                <th>Tên bánh</th>
+                                <th>Giá tiền</th>
+                                <th class="text-center">Xác nhận</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                        </tbody>
+                    </table>
+                    <div class="total-price">
+                        <strong>Tổng cộng (đã chọn):</strong>
+                        <span id="total-price-value">0 VNĐ</span>
+                    </div>
+                    <button id="confirm-payment-button" class="btn-confirm hidden">Xác nhận &amp; Thanh toán</button>
+                </div>
+
+                <div id="qr-section" class="qr-section hidden">
+                    <h2>Quét mã để thanh toán</h2>
+                    <img id="qr-code-image" src="" alt="Mã QR thanh toán">
+                    <p id="qr-info" class="qr-info"></p>
+                </div>
             </div>
-        </main>
-        <footer><p>&copy; 2025 - ABC Bakery AI Project</p></footer>
-    </div>
+        </div>
+        
+    </div> <!-- Đóng main-content-wrapper -->
 
     <script src="{{ url_for('static', filename='ABC_bakery.js') }}"></script>
 </body>
