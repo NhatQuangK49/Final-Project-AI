@@ -6,11 +6,13 @@ import numpy as np
 from keras.preprocessing.image import img_to_array
 from keras.models import load_model
 from PIL import Image
+from rembg import remove
+import io
 
 app = Flask(__name__)
 
 # --- CONFIGURATION ---
-MODEL_PATH = "ABC_Bakery.h5"
+MODEL_PATH = "model/bakery_cnn (1).h5"
 CLASS_INDICES_PATH = "class_indices.json"
 BAKERY_INFO_PATH = "bakery_info.json"
 UPLOAD_FOLDER = 'uploads'
@@ -78,8 +80,8 @@ def predict():
 def predict_tray():
     """
     Xử lý nhiều file ảnh được cắt từ frontend và tổng hợp kết quả.
+    (Phiên bản đã loại bỏ chức năng xóa nền)
     """
-    # 1. Nhận danh sách các file ảnh được gửi lên với key là 'files'
     files = request.files.getlist('files')
 
     if not files or files[0].filename == '':
@@ -89,12 +91,17 @@ def predict_tray():
     total_price = 0
 
     try:
-        # 2. Lặp qua từng file ảnh đã được cắt
+        # Lặp qua từng file ảnh đã được cắt
         for file in files:
-            # Mở file ảnh bằng PIL
-            img = Image.open(file.stream).convert('RGB')
+            # <<< --- PHẦN XÓA NỀN ĐÃ ĐƯỢC LOẠI BỎ --- >>>
             
-            # 3. Sử dụng lại hàm process_and_predict để dự đoán cho từng ảnh nhỏ
+            # Mở file ảnh trực tiếp bằng PIL và đảm bảo nó ở định dạng RGB
+            # file.stream chứa dữ liệu byte của ảnh
+            img = Image.open(file.stream).convert('RGB')
+
+            # --- KẾT THÚC THAY ĐỔI --- >>>
+            
+            # Sử dụng lại hàm process_and_predict để dự đoán cho từng ảnh nhỏ
             item_name, price, confidence = process_and_predict(img)
             
             # Thêm kết quả dự đoán vào danh sách
@@ -108,7 +115,7 @@ def predict_tray():
             # Cộng dồn vào tổng giá tiền
             total_price += int(price)
 
-        # 4. Trả về một JSON chứa danh sách các dự đoán và tổng tiền
+        # Trả về một JSON chứa danh sách các dự đoán và tổng tiền
         return jsonify({
             'predictions': predictions,
             'total_price': total_price,
